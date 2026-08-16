@@ -20,7 +20,6 @@ const createRequest = async (req, res) => {
     // Save request with AI intelligence results
     const newRequest = await DevelopmentRequest.create({
       ...req.body,
-
       category: analysis.category,
       priority: analysis.priority,
       urgencyScore: analysis.urgencyScore,
@@ -38,7 +37,7 @@ const createRequest = async (req, res) => {
   } catch (error) {
     console.error("Create Request Error:", error);
 
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });
