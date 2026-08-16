@@ -50,7 +50,6 @@ a {
   text-decoration: none;
 }
 
-
 /* =================================
    APP LAYOUT
 ================================= */
@@ -60,7 +59,6 @@ a {
   display: flex;
   background: #f8fafc;
 }
-
 
 /* =================================
    SIDEBAR
@@ -115,7 +113,6 @@ a {
   color: #ffffff;
 }
 
-
 /* =================================
    MAIN CONTENT
 ================================= */
@@ -166,7 +163,6 @@ a {
   padding: 30px;
 }
 
-
 /* =================================
    COMMON PAGE HEADER
 ================================= */
@@ -188,7 +184,6 @@ a {
   font-size: 14px;
   line-height: 1.7;
 }
-
 
 /* =================================
    COMMON BADGES
@@ -252,7 +247,6 @@ a {
   color: #dc2626;
 }
 
-
 /* =================================
    COMMON MESSAGES
 ================================= */
@@ -292,8 +286,9 @@ a {
   padding: 60px 20px;
   text-align: center;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px dashed #cbd5e1;
   border-radius: 14px;
+  color: #64748b;
 }
 
 .empty-state h3 {
@@ -306,7 +301,6 @@ a {
   color: #64748b;
   font-size: 14px;
 }
-
 
 /* =================================
    DASHBOARD
@@ -349,8 +343,9 @@ a {
   white-space: nowrap;
 }
 
-
-/* Dashboard Statistics */
+/* =================================
+   DASHBOARD STATISTICS
+================================= */
 
 .stats-grid {
   display: grid;
@@ -392,8 +387,9 @@ a {
   font-size: 12px;
 }
 
-
-/* Dashboard Main Grid */
+/* =================================
+   DASHBOARD MAIN GRID
+================================= */
 
 .dashboard-grid {
   display: grid;
@@ -429,8 +425,9 @@ a {
   font-size: 13px;
 }
 
-
-/* Category Chart */
+/* =================================
+   CATEGORY CHART
+================================= */
 
 .category-chart {
   display: flex;
@@ -469,6 +466,7 @@ a {
   height: 100%;
   background: #2563eb;
   border-radius: 20px;
+  transition: width 0.4s ease;
 }
 
 .chart-row strong {
@@ -476,59 +474,94 @@ a {
   font-size: 12px;
 }
 
-
-/* AI Insight */
+/* =================================
+   AI INSIGHT - PREMIUM DESIGN
+================================= */
 
 .dashboard .ai-card {
-  background: #0f172a;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #172554 100%);
   color: #ffffff;
   display: flex;
   flex-direction: column;
+  min-height: 375px;
+  border: 1px solid #334155;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+}
+
+/* Decorative background circle */
+
+.dashboard .ai-card::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.12);
+  top: -130px;
+  right: -100px;
+}
+
+/* Keep content above background */
+
+.dashboard .ai-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .ai-icon {
-  width: 45px;
-  height: 45px;
+  width: 52px;
+  height: 52px;
   display: grid;
   place-items: center;
-  background: #2563eb;
-  border-radius: 12px;
-  font-size: 22px;
-  margin-bottom: 24px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 14px;
+  font-size: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
 }
 
 .ai-label {
-  color: #60a5fa;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
+  display: inline-block;
+  width: fit-content;
+  color: #93c5fd;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
 }
 
 .dashboard .ai-card h2 {
   color: #ffffff;
-  font-size: 23px;
-  line-height: 1.35;
-  margin-bottom: 15px;
+  font-size: 24px;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  font-weight: 700;
 }
 
 .dashboard .ai-card p {
   color: #cbd5e1;
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.8;
   flex-grow: 1;
 }
 
 .ai-location {
-  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid #334155;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
   color: #94a3b8;
   font-size: 13px;
+  font-weight: 500;
 }
 
-
-/* Dashboard Priority Table */
+/* =================================
+   DASHBOARD PRIORITY TABLE
+================================= */
 
 .priority-section {
   margin-bottom: 20px;
@@ -593,7 +626,6 @@ a {
   min-width: 42px;
   font-size: 11px;
 }
-
 
 /* =================================
    SUBMIT REQUEST PAGE
@@ -719,7 +751,6 @@ a {
   opacity: 0.65;
 }
 
-
 /* =================================
    CITIZEN REQUESTS PAGE
 ================================= */
@@ -816,7 +847,6 @@ a {
   font-size: 14px;
 }
 
-
 /* =================================
    HOTSPOTS PAGE
 ================================= */
@@ -907,7 +937,6 @@ a {
 .hotspots-table td strong {
   color: #1e293b;
 }
-
 
 /* =================================
    PROJECT RECOMMENDATIONS PAGE
@@ -1083,177 +1112,9 @@ a {
   font-size: 13px;
 }
 
-
 /* =================================
-   RESPONSIVE
-================================= */
-
-@media (max-width: 1100px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: 70px;
-    padding: 20px 10px;
-  }
-
-  .sidebar h1 {
-    font-size: 14px;
-  }
-
-  .sidebar p {
-    display: none;
-  }
-
-  .sidebar nav a {
-    padding: 14px 5px;
-    text-align: center;
-    font-size: 0;
-  }
-
-  .main-content {
-    width: calc(100% - 70px);
-    margin-left: 70px;
-  }
-
-  .header {
-    padding: 15px;
-  }
-
-  .header h2 {
-    font-size: 16px;
-  }
-
-  .header-user span {
-    display: none;
-  }
-
-  .page-content {
-    padding: 20px 15px;
-  }
-
-  .page-header h1 {
-    font-size: 26px;
-  }
-
-  .dashboard-intro {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dashboard-intro h1 {
-    font-size: 24px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-card,
-  .requests-card,
-  .hotspots-card,
-  .recommendation-card {
-    padding: 18px;
-  }
-
-  .chart-row {
-    grid-template-columns: 85px 1fr 35px;
-    gap: 8px;
-  }
-
-  .request-form-card {
-    padding: 20px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-actions {
-    justify-content: stretch;
-  }
-
-  .submit-request-btn {
-    width: 100%;
-  }
-
-  .requests-page .requests-card-header,
-  .hotspots-page .requests-card-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .hotspots-page .requests-card-header > div:last-child {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .recommendations-page .page-header {
-    flex-direction: column;
-  }
-
-  .recommendations-page .refresh-btn {
-    width: 100%;
-  }
-
-  .recommendations-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .recommendation-stats {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .recommendation-stats div {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-
-@media (max-width: 500px) {
-  .header {
-    min-height: 75px;
-  }
-
-  .header p {
-    display: none;
-  }
-
-  .dashboard-intro p {
-    font-size: 13px;
-  }
-
-  .country-select {
-    width: 100%;
-  }
-
-  .dashboard-card,
-  .stat-card {
-    padding: 16px;
-  }
-
-  .chart-row {
-    grid-template-columns: 75px 1fr 30px;
-    font-size: 12px;
-  }
-
-  .recommendation-footer {
-    flex-direction: column;
-  }
-}
-
-/* =========================
    VOICE INPUT
-========================= */
+================================= */
 
 .voice-input {
   margin-top: 12px;
@@ -1311,7 +1172,9 @@ a {
   }
 }
 
-/* ================= DPI IMPACT ================= */
+/* =================================
+   DPI IMPACT
+================================= */
 
 .dpi-impact-page {
   padding: 30px;
@@ -1452,16 +1315,19 @@ a {
   font-weight: 500;
 }
 
-.empty-state {
-  background: #ffffff;
-  border: 1px dashed #cbd5e1;
-  border-radius: 14px;
-  padding: 50px;
-  text-align: center;
-  color: #64748b;
-}
+/* =================================
+   RESPONSIVE
+================================= */
 
-/* Responsive */
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 900px) {
   .impact-summary,
@@ -1471,5 +1337,162 @@ a {
 
   .impact-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+    padding: 20px 10px;
+  }
+
+  .sidebar h1 {
+    font-size: 14px;
+  }
+
+  .sidebar p {
+    display: none;
+  }
+
+  .sidebar nav a {
+    padding: 14px 5px;
+    text-align: center;
+    font-size: 0;
+  }
+
+  .main-content {
+    width: calc(100% - 70px);
+    margin-left: 70px;
+  }
+
+  .header {
+    padding: 15px;
+  }
+
+  .header h2 {
+    font-size: 16px;
+  }
+
+  .header-user span {
+    display: none;
+  }
+
+  .page-content {
+    padding: 20px 15px;
+  }
+
+  .page-header h1 {
+    font-size: 26px;
+  }
+
+  .dashboard-intro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-intro h1 {
+    font-size: 24px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card,
+  .requests-card,
+  .hotspots-card,
+  .recommendation-card {
+    padding: 18px;
+  }
+
+  .dashboard .ai-card {
+    min-height: auto;
+  }
+
+  .chart-row {
+    grid-template-columns: 85px 1fr 35px;
+    gap: 8px;
+  }
+
+  .request-form-card {
+    padding: 20px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    justify-content: stretch;
+  }
+
+  .submit-request-btn {
+    width: 100%;
+  }
+
+  .requests-page .requests-card-header,
+  .hotspots-page .requests-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hotspots-page .requests-card-header > div:last-child {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .recommendations-page .page-header {
+    flex-direction: column;
+  }
+
+  .recommendations-page .refresh-btn {
+    width: 100%;
+  }
+
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recommendation-stats {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .recommendation-stats div {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .header {
+    min-height: 75px;
+  }
+
+  .header p {
+    display: none;
+  }
+
+  .dashboard-intro p {
+    font-size: 13px;
+  }
+
+  .country-select {
+    width: 100%;
+  }
+
+  .dashboard-card,
+  .stat-card {
+    padding: 16px;
+  }
+
+  .chart-row {
+    grid-template-columns: 75px 1fr 30px;
+    font-size: 12px;
+  }
+
+  .recommendation-footer {
+    flex-direction: column;
   }
 }

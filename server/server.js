@@ -9,7 +9,6 @@ const intelligenceRoutes = require("./routes/intelligenceRoutes");
 const regionalDataRoutes = require("./routes/regionalDataRoutes");
 const messagingRoutes = require("./routes/messagingRoutes");
 const dpiImpactRoutes = require("./routes/dpiImpactRoutes");
-const whatsappRoutes = require("./routes/whatsappRoutes");
 
 dotenv.config();
 
@@ -48,7 +47,7 @@ app.use("/api/intelligence", intelligenceRoutes);
 app.use("/api/regional-data", regionalDataRoutes);
 app.use("/api/messaging", messagingRoutes);
 app.use("/api/dpi-impact", dpiImpactRoutes);
-app.use("/api/whatsapp", whatsappRoutes);
+
 
 app.get("/", (req, res) => {
   res.json({
