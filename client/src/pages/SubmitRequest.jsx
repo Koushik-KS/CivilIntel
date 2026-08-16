@@ -59,8 +59,6 @@ function SubmitRequest() {
         },
       };
 
-      console.log("Sending request:", requestData);
-
       const response = await API.post("/requests", requestData);
 
       console.log("Request submitted:", response.data);
@@ -125,6 +123,7 @@ function SubmitRequest() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-grid">
+
             <div className="form-group">
               <label>Citizen Name</label>
 
@@ -141,37 +140,49 @@ function SubmitRequest() {
             <div className="form-group">
               <label>Country</label>
 
-              <input
-                type="text"
+              <select
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="India">India</option>
+                <option value="Brazil">Brazil</option>
+                <option value="Russia">Russia</option>
+                <option value="China">China</option>
+                <option value="South Africa">South Africa</option>
+                <option value="Egypt">Egypt</option>
+                <option value="Ethiopia">Ethiopia</option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Iran">Iran</option>
+                <option value="United Arab Emirates">
+                  United Arab Emirates
+                </option>
+              </select>
             </div>
 
             <div className="form-group">
-              <label>State</label>
+              <label>State / Region</label>
 
               <input
                 type="text"
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                placeholder="Enter state"
+                placeholder="Enter state or region"
                 required
               />
             </div>
 
             <div className="form-group">
-              <label>District</label>
+              <label>District / City</label>
 
               <input
                 type="text"
                 name="district"
                 value={formData.district}
                 onChange={handleChange}
-                placeholder="Enter district"
+                placeholder="Enter district or city"
                 required
               />
             </div>
@@ -187,6 +198,11 @@ function SubmitRequest() {
                 <option value="en">English</option>
                 <option value="kn">Kannada</option>
                 <option value="hi">Hindi</option>
+                <option value="pt">Portuguese</option>
+                <option value="ru">Russian</option>
+                <option value="zh">Chinese</option>
+                <option value="ar">Arabic</option>
+                <option value="id">Indonesian</option>
               </select>
             </div>
 
@@ -203,6 +219,7 @@ function SubmitRequest() {
                 <option value="Messaging">Messaging</option>
               </select>
             </div>
+
           </div>
 
           <div className="form-group description-group">

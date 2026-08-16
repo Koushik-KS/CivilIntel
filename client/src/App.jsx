@@ -6,6 +6,8 @@ import SubmitRequest from "./pages/SubmitRequest";
 import Requests from "./pages/Requests";
 import Hotspots from "./pages/Hotspots";
 import Recommendations from "./pages/Recommendations";
+import DPIImpact from "./pages/DPIImpact";
+import Messaging from "./pages/Messaging";
 
 function App() {
   return (
@@ -16,6 +18,9 @@ function App() {
         <Route path="requests" element={<Requests />} />
         <Route path="hotspots" element={<Hotspots />} />
         <Route path="recommendations" element={<Recommendations />} />
+        <Route path="dpi-impact" element={<DPIImpact />} />
+      <Route path="messaging" element={<Messaging />} />
+      
       </Route>
     </Routes>
   );
