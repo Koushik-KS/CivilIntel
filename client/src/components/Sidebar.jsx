@@ -8,14 +8,30 @@ function Sidebar() {
 
       <nav>
         <NavLink to="/">Overview</NavLink>
-        <NavLink to="/submit-request">Submit Request</NavLink>
 
-        <NavLink to="/requests">Requests</NavLink>
-        <NavLink to="/hotspots">Demand Hotspots</NavLink>
+        <NavLink to="/submit-request">
+          Submit Request
+        </NavLink>
+
+        <NavLink to="/requests">
+          Requests
+        </NavLink>
+
+        <NavLink to="/hotspots">
+          Demand Hotspots
+        </NavLink>
+
         <NavLink to="/recommendations">
           Project Recommendations
         </NavLink>
-        <NavLink to="/dpi-impact">DPI Impact</NavLink>
+
+        <NavLink to="/dpi-impact">
+          DPI Impact
+        </NavLink>
+
+        <NavLink to="/messaging">
+          Messaging
+        </NavLink>
       </nav>
     </aside>
   );

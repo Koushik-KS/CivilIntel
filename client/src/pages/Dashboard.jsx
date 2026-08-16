@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import {
+  FileText,
+  MapPin,
+  TriangleAlert,
+  Target,
+  Sparkles,
+} from "lucide-react";
 
 function Dashboard() {
   const [recommendations, setRecommendations] = useState([]);
@@ -18,23 +25,11 @@ function Dashboard() {
       try {
         setLoading(true);
 
-        console.log("Fetching CivilIntel dashboard data...");
-
-        // Fetch recommendations and statistics together
-        const [recommendationsResponse, statsResponse] = await Promise.all([
-          API.get("/intelligence/recommendations"),
-          API.get("/intelligence/stats"),
-        ]);
-
-        console.log(
-          "Recommendations:",
-          recommendationsResponse.data
-        );
-
-        console.log(
-          "Dashboard Stats:",
-          statsResponse.data
-        );
+        const [recommendationsResponse, statsResponse] =
+          await Promise.all([
+            API.get("/intelligence/recommendations"),
+            API.get("/intelligence/stats"),
+          ]);
 
         setRecommendations(
           recommendationsResponse.data.data || []
@@ -62,31 +57,35 @@ function Dashboard() {
     fetchDashboardData();
   }, []);
 
-  // Dashboard statistics from API
+  // Dashboard statistics
   const stats = [
     {
       title: "Total Citizen Requests",
       value: dashboardStats.totalRequests,
       description: "Development needs reported",
-      icon: "📨",
+      icon: FileText,
+      iconClass: "requests-icon",
     },
     {
       title: "Active Demand Hotspots",
       value: dashboardStats.activeHotspots,
       description: "Regions requiring attention",
-      icon: "📍",
+      icon: MapPin,
+      iconClass: "hotspots-icon",
     },
     {
       title: "Critical Issues",
       value: dashboardStats.criticalIssues,
       description: "Urgent citizen concerns",
-      icon: "⚠️",
+      icon: TriangleAlert,
+      iconClass: "critical-icon",
     },
     {
       title: "High Priority Projects",
       value: dashboardStats.highPriorityProjects,
       description: "Recommended for action",
-      icon: "🎯",
+      icon: Target,
+      iconClass: "projects-icon",
     },
   ];
 
@@ -101,10 +100,8 @@ function Dashboard() {
     project: item.recommendedProject,
   }));
 
-  // Category demand from API
   const categoryDemand = dashboardStats.categoryDemand || [];
 
-  // Find highest category count for percentage calculation
   const maxCategoryCount =
     categoryDemand.length > 0
       ? Math.max(...categoryDemand.map((item) => item.count))
@@ -131,25 +128,31 @@ function Dashboard() {
 
       {/* Statistics */}
       <section className="stats-grid">
-        {stats.map((stat) => (
-          <div className="stat-card" key={stat.title}>
-            <div className="stat-top">
-              <span>{stat.icon}</span>
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+
+          return (
+            <div className="stat-card" key={stat.title}>
+              <div className={`stat-top ${stat.iconClass}`}>
+                <Icon size={24} strokeWidth={2.2} />
+              </div>
+
+              <p className="stat-title">
+                {stat.title}
+              </p>
+
+              <h2>
+                {loading
+                  ? "..."
+                  : Number(stat.value || 0).toLocaleString()}
+              </h2>
+
+              <p className="stat-description">
+                {stat.description}
+              </p>
             </div>
-
-            <p className="stat-title">
-              {stat.title}
-            </p>
-
-            <h2>
-              {loading ? "..." : stat.value.toLocaleString()}
-            </h2>
-
-            <p className="stat-description">
-              {stat.description}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       {/* Demand Overview + AI Insight */}
@@ -192,7 +195,7 @@ function Dashboard() {
                         style={{
                           width: `${percentage}%`,
                         }}
-                      ></div>
+                      />
                     </div>
 
                     <strong>
@@ -212,8 +215,9 @@ function Dashboard() {
 
         {/* AI Insight */}
         <div className="dashboard-card ai-card">
+
           <div className="ai-icon">
-            ✦
+            <Sparkles size={22} strokeWidth={2.2} />
           </div>
 
           <span className="ai-label">
@@ -235,11 +239,15 @@ function Dashboard() {
           </p>
 
           <div className="ai-location">
-            📍{" "}
-            {recommendations.length > 0
-              ? `${recommendations[0].district}, ${recommendations[0].state}`
-              : "Analyzing location..."}
+            <MapPin size={16} />
+
+            <span>
+              {recommendations.length > 0
+                ? `${recommendations[0].district}, ${recommendations[0].state}`
+                : "Analyzing location..."}
+            </span>
           </div>
+
         </div>
 
       </section>
@@ -275,7 +283,6 @@ function Dashboard() {
             </thead>
 
             <tbody>
-
               {loading ? (
                 <tr>
                   <td colSpan="6">
@@ -286,23 +293,15 @@ function Dashboard() {
                 regions.map((region) => (
                   <tr key={region.rank}>
 
-                    <td>
-                      #{region.rank}
-                    </td>
+                    <td>#{region.rank}</td>
 
                     <td>
-                      <strong>
-                        {region.district}
-                      </strong>
+                      <strong>{region.district}</strong>
                     </td>
 
-                    <td>
-                      {region.category}
-                    </td>
+                    <td>{region.category}</td>
 
-                    <td>
-                      {region.requests}
-                    </td>
+                    <td>{region.requests}</td>
 
                     <td>
                       <div className="score">
@@ -313,7 +312,7 @@ function Dashboard() {
                             style={{
                               width: `${region.score}%`,
                             }}
-                          ></div>
+                          />
                         </div>
 
                         <strong>
@@ -340,7 +339,6 @@ function Dashboard() {
                   </td>
                 </tr>
               )}
-
             </tbody>
           </table>
         </div>

@@ -6,7 +6,9 @@ const {
   getProjectRecommendation,
 } = require("../services/priorityService");
 
-// Get demand hotspots
+// ==========================================
+// GET DEMAND HOTSPOTS
+// ==========================================
 const getHotspots = async (req, res) => {
   try {
     const hotspots = await DevelopmentRequest.aggregate([
@@ -72,7 +74,9 @@ const getHotspots = async (req, res) => {
   }
 };
 
-// Get complete AI priority recommendations
+// ==========================================
+// GET AI PRIORITY RECOMMENDATIONS
+// ==========================================
 const getPriorityRecommendations = async (req, res) => {
   try {
     const hotspots = await DevelopmentRequest.aggregate([
@@ -122,6 +126,7 @@ const getPriorityRecommendations = async (req, res) => {
       // Skip regions without regional intelligence data
       if (!regionalData) continue;
 
+      // Calculate priority score using all intelligence data
       const priorityResult = calculatePriorityScore({
         // Citizen demand
         requestCount: hotspot.requestCount,
@@ -214,7 +219,9 @@ const getPriorityRecommendations = async (req, res) => {
   }
 };
 
-// Get dashboard statistics
+// ==========================================
+// GET DASHBOARD STATISTICS
+// ==========================================
 const getDashboardStats = async (req, res) => {
   try {
     const totalRequests =
@@ -288,8 +295,188 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
+// ==========================================
+// ANALYZE CITIZEN MESSAGE
+// ==========================================
+const analyzeMessage = async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    // Validate message
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a development message.",
+      });
+    }
+
+    const text = message.toLowerCase();
+
+    let category = "General Infrastructure";
+    let urgency = "Medium";
+    let recommendation =
+      "Further regional infrastructure assessment is required.";
+
+    // ------------------------------------------
+    // CATEGORY DETECTION
+    // ------------------------------------------
+
+    if (
+      text.includes("water") ||
+      text.includes("drainage") ||
+      text.includes("flood") ||
+      text.includes("flooding") ||
+      text.includes("rainfall") ||
+      text.includes("water supply")
+    ) {
+      category = "Water & Drainage";
+      recommendation =
+        "Develop drainage, flood management, and water infrastructure.";
+    } else if (
+      text.includes("road") ||
+      text.includes("roads") ||
+      text.includes("pothole") ||
+      text.includes("potholes") ||
+      text.includes("street") ||
+      text.includes("bridge")
+    ) {
+      category = "Road Infrastructure";
+      recommendation =
+        "Repair damaged roads and improve transport infrastructure.";
+    } else if (
+      text.includes("hospital") ||
+      text.includes("health") ||
+      text.includes("healthcare") ||
+      text.includes("medical") ||
+      text.includes("doctor")
+    ) {
+      category = "Healthcare";
+      recommendation =
+        "Improve healthcare facilities and medical infrastructure.";
+    } else if (
+      text.includes("school") ||
+      text.includes("education") ||
+      text.includes("college") ||
+      text.includes("classroom")
+    ) {
+      category = "Education";
+      recommendation =
+        "Improve educational facilities and public learning infrastructure.";
+    } else if (
+      text.includes("electricity") ||
+      text.includes("power") ||
+      text.includes("power cut") ||
+      text.includes("electric")
+    ) {
+      category = "Electricity";
+      recommendation =
+        "Improve electricity distribution and power infrastructure.";
+    } else if (
+      text.includes("internet") ||
+      text.includes("network") ||
+      text.includes("digital") ||
+      text.includes("connectivity") ||
+      text.includes("broadband")
+    ) {
+      category = "Digital Infrastructure";
+      recommendation =
+        "Improve digital connectivity and public digital infrastructure.";
+    } else if (
+      text.includes("garbage") ||
+      text.includes("waste") ||
+      text.includes("pollution") ||
+      text.includes("sanitation")
+    ) {
+      category = "Waste Management";
+      recommendation =
+        "Strengthen waste collection, sanitation, and environmental infrastructure.";
+    }
+
+    // ------------------------------------------
+    // URGENCY DETECTION
+    // ------------------------------------------
+
+    if (
+      text.includes("emergency") ||
+      text.includes("urgent") ||
+      text.includes("danger") ||
+      text.includes("severe") ||
+      text.includes("immediately") ||
+      text.includes("critical") ||
+      text.includes("life threatening")
+    ) {
+      urgency = "Critical";
+    } else if (
+      text.includes("heavy") ||
+      text.includes("damaged") ||
+      text.includes("flooding") ||
+      text.includes("poor") ||
+      text.includes("serious") ||
+      text.includes("badly") ||
+      text.includes("major")
+    ) {
+      urgency = "High";
+    }
+
+    // ------------------------------------------
+    // BASIC LOCATION DETECTION
+    // ------------------------------------------
+
+    let location = "Not identified";
+
+    const locationPatterns = [
+      /(?:in|at|near|from)\s+([a-zA-Z\s]+?)(?:\.|,|because|where|and|$)/i,
+    ];
+
+    for (const pattern of locationPatterns) {
+      const match = message.match(pattern);
+
+      if (match && match[1]) {
+        const detectedLocation =
+          match[1].trim();
+
+        if (detectedLocation.length > 2) {
+          location = detectedLocation;
+          break;
+        }
+      }
+    }
+
+    // ------------------------------------------
+    // RETURN AI ANALYSIS
+    // ------------------------------------------
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "CivilIntel AI analyzed your development request.",
+      data: {
+        category,
+        urgency,
+        location,
+        recommendation,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Message Analysis Error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Unable to analyze the development message.",
+    });
+  }
+};
+
+// ==========================================
+// EXPORT CONTROLLERS
+// ==========================================
 module.exports = {
   getHotspots,
   getPriorityRecommendations,
   getDashboardStats,
+  analyzeMessage,
 };
