@@ -14,18 +14,19 @@ const developmentRequestSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // Original language selected by the citizen
+    // Language selected by citizen
     language: {
       type: String,
       default: "en",
     },
 
-    // AI detected/analyzed language
+    // Language detected by CivilIntel AI
     detectedLanguage: {
       type: String,
       default: "en",
     },
 
+    // AI detected development category
     category: {
       type: String,
       enum: [
@@ -41,17 +42,35 @@ const developmentRequestSchema = new mongoose.Schema(
       default: "Other",
     },
 
+    // Citizen location
     location: {
       country: {
         type: String,
         default: "India",
       },
-      state: String,
-      district: String,
-      latitude: Number,
-      longitude: Number,
+
+      state: {
+        type: String,
+        default: "",
+      },
+
+      district: {
+        type: String,
+        default: "",
+      },
+
+      latitude: {
+        type: Number,
+        default: null,
+      },
+
+      longitude: {
+        type: Number,
+        default: null,
+      },
     },
 
+    // AI calculated priority
     priority: {
       type: String,
       enum: ["Low", "Medium", "High", "Critical"],
@@ -74,12 +93,13 @@ const developmentRequestSchema = new mongoose.Schema(
       max: 100,
     },
 
-    // Keywords/signals detected by CivilIntel intelligence engine
+    // Keywords/signals detected by AI
     detectedSignals: {
       type: [String],
       default: [],
     },
 
+    // Request lifecycle status
     status: {
       type: String,
       enum: [
@@ -92,6 +112,7 @@ const developmentRequestSchema = new mongoose.Schema(
       default: "New",
     },
 
+    // How the citizen submitted the request
     source: {
       type: String,
       enum: ["Text", "Voice", "Messaging"],
@@ -103,7 +124,10 @@ const developmentRequestSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model(
+// Create and export the actual Mongoose model
+const DevelopmentRequest = mongoose.model(
   "DevelopmentRequest",
   developmentRequestSchema
 );
+
+module.exports = DevelopmentRequest;
