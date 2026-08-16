@@ -1,10 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
 const connectDB = require("./config/db");
+
 const requestRoutes = require("./routes/requestRoutes");
 const intelligenceRoutes = require("./routes/intelligenceRoutes");
-
+const regionalDataRoutes = require("./routes/regionalDataRoutes");
 
 dotenv.config();
 
@@ -14,13 +16,16 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Routes
 app.use("/api/requests", requestRoutes);
 app.use("/api/intelligence", intelligenceRoutes);
+app.use("/api/regional-data", regionalDataRoutes);
 
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "CivilIntel API is running"
+    message: "CivilIntel API is running",
   });
 });
 

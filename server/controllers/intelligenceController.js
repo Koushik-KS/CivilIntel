@@ -13,16 +13,20 @@ const getHotspots = async (req, res) => {
       {
         $group: {
           _id: {
-            district: "$location.district",
+            country: "$location.country",
             state: "$location.state",
+            district: "$location.district",
             category: "$category",
           },
+
           requestCount: { $sum: 1 },
+
           criticalCount: {
             $sum: {
               $cond: [{ $eq: ["$priority", "Critical"] }, 1, 0],
             },
           },
+
           highCount: {
             $sum: {
               $cond: [{ $eq: ["$priority", "High"] }, 1, 0],
@@ -30,17 +34,20 @@ const getHotspots = async (req, res) => {
           },
         },
       },
+
       {
         $project: {
           _id: 0,
-          district: "$_id.district",
+          country: "$_id.country",
           state: "$_id.state",
+          district: "$_id.district",
           category: "$_id.category",
           requestCount: 1,
           criticalCount: 1,
           highCount: 1,
         },
       },
+
       {
         $sort: {
           requestCount: -1,
@@ -56,6 +63,8 @@ const getHotspots = async (req, res) => {
       data: hotspots,
     });
   } catch (error) {
+    console.error("Hotspots Error:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -63,23 +72,27 @@ const getHotspots = async (req, res) => {
   }
 };
 
-// Get complete priority recommendations
+// Get complete AI priority recommendations
 const getPriorityRecommendations = async (req, res) => {
   try {
     const hotspots = await DevelopmentRequest.aggregate([
       {
         $group: {
           _id: {
-            district: "$location.district",
+            country: "$location.country",
             state: "$location.state",
+            district: "$location.district",
             category: "$category",
           },
+
           requestCount: { $sum: 1 },
+
           criticalCount: {
             $sum: {
               $cond: [{ $eq: ["$priority", "Critical"] }, 1, 0],
             },
           },
+
           highCount: {
             $sum: {
               $cond: [{ $eq: ["$priority", "High"] }, 1, 0],
@@ -92,50 +105,95 @@ const getPriorityRecommendations = async (req, res) => {
     const recommendations = [];
 
     for (const hotspot of hotspots) {
-      const { district, state, category } = hotspot._id;
-
-      const regionalData = await RegionalData.findOne({
-        district,
+      const {
+        country,
         state,
+        district,
+        category,
+      } = hotspot._id;
+
+      // Find demographic, infrastructure and investment data
+      const regionalData = await RegionalData.findOne({
+        country,
+        state,
+        district,
       });
 
+      // Skip regions without regional intelligence data
       if (!regionalData) continue;
 
       const priorityResult = calculatePriorityScore({
+        // Citizen demand
         requestCount: hotspot.requestCount,
         criticalCount: hotspot.criticalCount,
         highCount: hotspot.highCount,
+
+        // Demographic data
         population: regionalData.population,
+        populationDensity: regionalData.populationDensity,
+        ruralPopulation: regionalData.ruralPopulation,
+        urbanPopulation: regionalData.urbanPopulation,
+
+        // Infrastructure data
         infrastructureIndex: regionalData.infrastructureIndex,
+        infrastructure: regionalData.infrastructure,
+
+        // Public investment
         publicInvestment: regionalData.publicInvestment,
       });
 
       recommendations.push({
-        country: regionalData.country,
+        country,
         state,
         district,
         category,
 
+        // Exact regional address
+        address: regionalData.address,
+
+        // Citizen demand intelligence
         citizenDemand: {
           requestCount: hotspot.requestCount,
           criticalCount: hotspot.criticalCount,
           highCount: hotspot.highCount,
         },
 
-        regionalContext: {
+        // Demographic intelligence
+        demographicData: {
           population: regionalData.population,
-          infrastructureIndex: regionalData.infrastructureIndex,
-          publicInvestment: regionalData.publicInvestment,
+          populationDensity: regionalData.populationDensity,
+          ruralPopulation: regionalData.ruralPopulation,
+          urbanPopulation: regionalData.urbanPopulation,
         },
 
+        // Infrastructure intelligence
+        infrastructureData: {
+          infrastructureIndex:
+            regionalData.infrastructureIndex,
+          infrastructure:
+            regionalData.infrastructure,
+        },
+
+        // Government investment intelligence
+        investmentData: {
+          publicInvestment:
+            regionalData.publicInvestment,
+        },
+
+        // AI priority result
         priority: priorityResult,
 
-        recommendedProject: getProjectRecommendation(category),
+        // Recommended development project
+        recommendedProject:
+          getProjectRecommendation(category),
       });
     }
 
+    // Highest priority first
     recommendations.sort(
-      (a, b) => b.priority.totalScore - a.priority.totalScore
+      (a, b) =>
+        b.priority.totalScore -
+        a.priority.totalScore
     );
 
     res.status(200).json({
@@ -144,6 +202,11 @@ const getPriorityRecommendations = async (req, res) => {
       data: recommendations,
     });
   } catch (error) {
+    console.error(
+      "Priority Recommendations Error:",
+      error
+    );
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -154,27 +217,34 @@ const getPriorityRecommendations = async (req, res) => {
 // Get dashboard statistics
 const getDashboardStats = async (req, res) => {
   try {
-    // Total citizen requests
     const totalRequests =
       await DevelopmentRequest.countDocuments();
 
-    // Critical citizen issues
     const criticalIssues =
       await DevelopmentRequest.countDocuments({
         priority: "Critical",
       });
 
-    // High priority citizen issues
     const highPriorityProjects =
       await DevelopmentRequest.countDocuments({
         priority: "High",
       });
 
-    // Unique districts with citizen requests
-    const hotspots =
-      await DevelopmentRequest.distinct("location.district");
+    // Unique regions with citizen requests
+    const hotspotRegions =
+      await DevelopmentRequest.aggregate([
+        {
+          $group: {
+            _id: {
+              country: "$location.country",
+              state: "$location.state",
+              district: "$location.district",
+            },
+          },
+        },
+      ]);
 
-    // Category-wise demand
+    // Category-wise citizen demand
     const categoryDemand =
       await DevelopmentRequest.aggregate([
         {
@@ -190,18 +260,26 @@ const getDashboardStats = async (req, res) => {
         },
       ]);
 
+    // Total regions with intelligence data
+    const regionalDataCount =
+      await RegionalData.countDocuments();
+
     res.status(200).json({
       success: true,
       data: {
         totalRequests,
-        activeHotspots: hotspots.length,
+        activeHotspots: hotspotRegions.length,
         criticalIssues,
         highPriorityProjects,
+        regionalDataCount,
         categoryDemand,
       },
     });
   } catch (error) {
-    console.error("Dashboard Stats Error:", error);
+    console.error(
+      "Dashboard Stats Error:",
+      error
+    );
 
     res.status(500).json({
       success: false,

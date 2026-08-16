@@ -1250,3 +1250,63 @@ a {
     flex-direction: column;
   }
 }
+
+/* =========================
+   VOICE INPUT
+========================= */
+
+.voice-input {
+  margin-top: 12px;
+}
+
+.voice-btn {
+  border: none;
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 11px 16px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.voice-btn:hover:not(:disabled) {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.voice-btn.listening {
+  background: #dc2626;
+  color: #ffffff;
+  animation: voicePulse 1.2s infinite;
+}
+
+.voice-btn:disabled {
+  cursor: not-allowed;
+}
+
+.voice-status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #2563eb;
+}
+
+.voice-error {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #dc2626;
+}
+
+@keyframes voicePulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.65;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

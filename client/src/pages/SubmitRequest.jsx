@@ -1,5 +1,6 @@
 import { useState } from "react";
 import API from "../services/api";
+import VoiceInput from "../components/VoiceInput";
 
 function SubmitRequest() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,19 @@ function SubmitRequest() {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  // Voice transcript → Description
+  const handleVoiceTranscript = (transcript, isFinal) => {
+    if (!transcript) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      description: isFinal
+        ? `${prev.description} ${transcript}`.trim()
+        : transcript,
+      source: "Voice",
     }));
   };
 
@@ -198,14 +212,19 @@ function SubmitRequest() {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              placeholder="Example: Our village has a serious drinking water shortage. Citizens travel several kilometers daily to collect water..."
+              placeholder="Type your request or use the microphone to speak..."
               rows="7"
               required
             />
 
+            <VoiceInput
+              language={formData.language}
+              onTranscript={handleVoiceTranscript}
+            />
+
             <p className="form-hint">
-              CivilIntel will analyze your message and automatically identify
-              the development category and priority level.
+              Type your request or speak using the microphone. CivilIntel will
+              convert your voice into text and analyze the development issue.
             </p>
           </div>
 
