@@ -66,7 +66,6 @@ const getHotspots = async (req, res) => {
 // Get complete priority recommendations
 const getPriorityRecommendations = async (req, res) => {
   try {
-    // Get citizen demand grouped by district + category
     const hotspots = await DevelopmentRequest.aggregate([
       {
         $group: {
@@ -95,16 +94,13 @@ const getPriorityRecommendations = async (req, res) => {
     for (const hotspot of hotspots) {
       const { district, state, category } = hotspot._id;
 
-      // Find matching regional data
       const regionalData = await RegionalData.findOne({
         district,
         state,
       });
 
-      // Skip if no external regional data exists
       if (!regionalData) continue;
 
-      // Calculate transparent priority score
       const priorityResult = calculatePriorityScore({
         requestCount: hotspot.requestCount,
         criticalCount: hotspot.criticalCount,
@@ -138,7 +134,6 @@ const getPriorityRecommendations = async (req, res) => {
       });
     }
 
-    // Highest-priority projects first
     recommendations.sort(
       (a, b) => b.priority.totalScore - a.priority.totalScore
     );
@@ -156,7 +151,67 @@ const getPriorityRecommendations = async (req, res) => {
   }
 };
 
+// Get dashboard statistics
+const getDashboardStats = async (req, res) => {
+  try {
+    // Total citizen requests
+    const totalRequests =
+      await DevelopmentRequest.countDocuments();
+
+    // Critical citizen issues
+    const criticalIssues =
+      await DevelopmentRequest.countDocuments({
+        priority: "Critical",
+      });
+
+    // High priority citizen issues
+    const highPriorityProjects =
+      await DevelopmentRequest.countDocuments({
+        priority: "High",
+      });
+
+    // Unique districts with citizen requests
+    const hotspots =
+      await DevelopmentRequest.distinct("location.district");
+
+    // Category-wise demand
+    const categoryDemand =
+      await DevelopmentRequest.aggregate([
+        {
+          $group: {
+            _id: "$category",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            count: -1,
+          },
+        },
+      ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalRequests,
+        activeHotspots: hotspots.length,
+        criticalIssues,
+        highPriorityProjects,
+        categoryDemand,
+      },
+    });
+  } catch (error) {
+    console.error("Dashboard Stats Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getHotspots,
   getPriorityRecommendations,
+  getDashboardStats,
 };
