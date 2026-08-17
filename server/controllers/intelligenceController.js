@@ -116,17 +116,38 @@ const getPriorityRecommendations = async (req, res) => {
         category,
       } = hotspot._id;
 
-      // Find demographic, infrastructure and investment data
+      // Skip incomplete location data
+      if (!country || !state || !district) {
+        continue;
+      }
+
+      // Find regional intelligence data
+      // Case-insensitive matching:
+      // Chikkamagaluru = chikkamagaluru = CHIKKAMAGALURU
       const regionalData = await RegionalData.findOne({
-        country,
-        state,
-        district,
+        country: {
+          $regex: `^${country.trim()}$`,
+          $options: "i",
+        },
+        state: {
+          $regex: `^${state.trim()}$`,
+          $options: "i",
+        },
+        district: {
+          $regex: `^${district.trim()}$`,
+          $options: "i",
+        },
       });
 
-      // Skip regions without regional intelligence data
-      if (!regionalData) continue;
+      // Skip regions without intelligence data
+      if (!regionalData) {
+        console.log(
+          `No RegionalData found for: ${country}, ${state}, ${district}`
+        );
+        continue;
+      }
 
-      // Calculate priority score using all intelligence data
+      // Calculate AI priority score
       const priorityResult = calculatePriorityScore({
         // Citizen demand
         requestCount: hotspot.requestCount,
@@ -143,27 +164,24 @@ const getPriorityRecommendations = async (req, res) => {
         infrastructureIndex: regionalData.infrastructureIndex,
         infrastructure: regionalData.infrastructure,
 
-        // Public investment
+        // Public investment data
         publicInvestment: regionalData.publicInvestment,
       });
 
       recommendations.push({
-        country,
-        state,
-        district,
+        country: regionalData.country,
+        state: regionalData.state,
+        district: regionalData.district,
         category,
 
-        // Exact regional address
         address: regionalData.address,
 
-        // Citizen demand intelligence
         citizenDemand: {
           requestCount: hotspot.requestCount,
           criticalCount: hotspot.criticalCount,
           highCount: hotspot.highCount,
         },
 
-        // Demographic intelligence
         demographicData: {
           population: regionalData.population,
           populationDensity: regionalData.populationDensity,
@@ -171,24 +189,21 @@ const getPriorityRecommendations = async (req, res) => {
           urbanPopulation: regionalData.urbanPopulation,
         },
 
-        // Infrastructure intelligence
         infrastructureData: {
           infrastructureIndex:
             regionalData.infrastructureIndex,
+
           infrastructure:
             regionalData.infrastructure,
         },
 
-        // Government investment intelligence
         investmentData: {
           publicInvestment:
             regionalData.publicInvestment,
         },
 
-        // AI priority result
         priority: priorityResult,
 
-        // Recommended development project
         recommendedProject:
           getProjectRecommendation(category),
       });
@@ -237,7 +252,6 @@ const getDashboardStats = async (req, res) => {
         priority: "High",
       });
 
-    // Unique regions with citizen requests
     const hotspotRegions =
       await DevelopmentRequest.aggregate([
         {
@@ -251,7 +265,6 @@ const getDashboardStats = async (req, res) => {
         },
       ]);
 
-    // Category-wise citizen demand
     const categoryDemand =
       await DevelopmentRequest.aggregate([
         {
@@ -267,7 +280,6 @@ const getDashboardStats = async (req, res) => {
         },
       ]);
 
-    // Total regions with intelligence data
     const regionalDataCount =
       await RegionalData.countDocuments();
 
@@ -302,7 +314,6 @@ const analyzeMessage = async (req, res) => {
   try {
     const { message } = req.body;
 
-    // Validate message
     if (!message || !message.trim()) {
       return res.status(400).json({
         success: false,
@@ -317,10 +328,7 @@ const analyzeMessage = async (req, res) => {
     let recommendation =
       "Further regional infrastructure assessment is required.";
 
-    // ------------------------------------------
     // CATEGORY DETECTION
-    // ------------------------------------------
-
     if (
       text.includes("water") ||
       text.includes("drainage") ||
@@ -392,10 +400,7 @@ const analyzeMessage = async (req, res) => {
         "Strengthen waste collection, sanitation, and environmental infrastructure.";
     }
 
-    // ------------------------------------------
     // URGENCY DETECTION
-    // ------------------------------------------
-
     if (
       text.includes("emergency") ||
       text.includes("urgent") ||
@@ -418,10 +423,7 @@ const analyzeMessage = async (req, res) => {
       urgency = "High";
     }
 
-    // ------------------------------------------
-    // BASIC LOCATION DETECTION
-    // ------------------------------------------
-
+    // LOCATION DETECTION
     let location = "Not identified";
 
     const locationPatterns = [
@@ -441,10 +443,6 @@ const analyzeMessage = async (req, res) => {
         }
       }
     }
-
-    // ------------------------------------------
-    // RETURN AI ANALYSIS
-    // ------------------------------------------
 
     return res.status(200).json({
       success: true,
