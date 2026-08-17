@@ -6,19 +6,22 @@ const seedRegionalData = require("./regionalData");
 
 dotenv.config();
 
-const runSeed = async () => {
+const seedDatabase = async () => {
   try {
     await connectDB();
+
     await seedRegionalData();
 
-    console.log("All seed data inserted successfully");
+    console.log("Database seeding completed");
 
     await mongoose.connection.close();
+
     process.exit(0);
   } catch (error) {
-    console.error("Seed failed:", error.message);
+    console.error("Database seeding failed:", error);
+
     process.exit(1);
   }
 };
 
-runSeed();
+seedDatabase();
